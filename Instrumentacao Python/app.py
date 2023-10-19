@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, make_response
 from db import Filmes, insert
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['JSON_SORT-KEYS'] = False
@@ -7,9 +8,19 @@ app.config['JSON_SORT-KEYS'] = False
 
 @app.route("/filmes", methods=["GET"])
 def getAll():
+    if len(Filmes) == 0:
+        return jsonify(
+            status=204,
+            datetime=datetime.today(),
+            message="No content"
+        ), 204
+
     return make_response(
-        jsonify(Filmes),
-        200
+        jsonify(
+            status=200,
+            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+            data=Filmes
+        ), 200
     )
 
 
@@ -18,10 +29,20 @@ def postObj():
     novoFilme = request.json
     try:
         filme_inserido = insert(novoFilme)
+        resgate = Filmes[len(Filmes) - 1]
+        retorno = {
+            "id": resgate.id,
+            "titulo": resgate.titulo,
+            "genero": resgate.genero,
+            "direcao": resgate.direcao,
+            "lancamento": resgate.lancamento
+        }
+
         return jsonify(
             status=201,
-            mensagem='Inserção no pseudo-database',
-            data=filme_inserido
+            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+            message="Inserção no pseudo-database",
+            data=retorno
         ), 201
     except Exception as e:
         return jsonify(

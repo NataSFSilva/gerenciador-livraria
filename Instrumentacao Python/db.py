@@ -1,4 +1,5 @@
 import model
+import json
 from datetime import date
 
 Filmes = [
@@ -35,8 +36,8 @@ def insert(valores):
         id = Filmes[- 1]['id'] + 1
 
     novo = model.Filme(id, valores['titulo'], valores['genero'],
-                       valores['direcao'], date.today())
+                       valores['direcao'], date.fromisoformat(valores['lancamento']).strftime("%Y-%m-%d"))
 
-    Filmes.append(novo)
+    Filmes.append(json.dumps(novo.__dict__))
 
     return novo
