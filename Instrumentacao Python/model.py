@@ -46,8 +46,4 @@ class Filme():
         self._lancamento = lancamento
 
     def __str__(self):
-        return f"Filme(id={self.id},
-            titulo='{self.titulo}',
-            genero='{self.genero}',
-            direcao='{self.direcao}',
-            lancamento='{self.lancamento}')"
+        return f"Filme(id={self.id}, titulo='{self.titulo}', genero='{self.genero}', direcao='{self.direcao}', lancamento='{self.lancamento}')"
