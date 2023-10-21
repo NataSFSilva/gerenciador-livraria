@@ -1,80 +1,63 @@
 from flask import Flask, jsonify, request, make_response
-from db import Filmes, insert
+import db
 from datetime import datetime
 
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 app.config['JSON_SORT_KEYS'] = False
 
+def responseGenerator(stts: int, msg: str, dt):
+    if dt is None:
+        return jsonify(
+                status=stts,
+                datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                message=msg
+            ), stts
+    
+    return jsonify(
+                status=stts,
+                datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                message=msg,
+                data=dt
+            ), stts
 
 @app.route("/filmes", methods=["GET"])
 def getAll():
-    if len(Filmes) == 0:
-        return jsonify(
-            status=204,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            message="Sem conteúdo"
-        ), 204
+    filmesList = db.selectAll()
+
+    if len(filmesList) == 0:
+        return responseGenerator(204, "Sem conteúdo", None)
 
 
-    return make_response(
-        jsonify(
-            status=200,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            data=Filmes
-        ), 200
-    )
+    return responseGenerator(200, "Todos os valores", filmesList)
 
 
 @app.route("/filmes", methods=["POST"])
 def postObj():
     novoFilme = request.json
     try:
-        insert(novoFilme)
-        resgate = Filmes[len(Filmes) - 1]
+        db.insert(novoFilme)
+        filmes = db.selectAll()
+        resgate = filmes[len(filmes) - 1]
         retorno = {
-            "id": resgate.id,
-            "titulo": resgate.titulo,
-            "genero": resgate.genero,
-            "direcao": resgate.direcao,
-            "lancamento": resgate.lancamento
+            "id": resgate[0],
+            "titulo": resgate[1],
+            "genero": resgate[2],
+            "direcao": resgate[3],
+            "lancamento": resgate[4]
         }
 
-        return jsonify(
-            status=201,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            message="Inserção no pseudo-database",
-            data=retorno
-        ), 201
+        return responseGenerator(201, "Inserção no banco de dados realizada com sucesso", retorno)
     except Exception as e:
-        return jsonify(
-            status=400,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            error=str(e)
-        ), 400
+        return responseGenerator(400, str(e), None)
 
 @app.route("/filmes/<int:id>", methods=["GET"])
 def getOne(id: int):
-    if len(Filmes) == 0:
-        return jsonify(
-            status=204,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            message="Sem conteúdo"
-        ), 204
-
-    for filme in Filmes:
-        if filme['id'] == id:
-            return jsonify(
-            status=200,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            message="Valor encontrado",
-            data=filme
-        ), 200
+    filme = db.selectOne(id)
     
-    return jsonify(
-            status=404,
-            datetime=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            message="Valor não encontrado"
-        ), 404 
+    if filme == None:
+        return responseGenerator(404, "Valor não encontrado", None)
+
+    return responseGenerator(200, "Valor encontrado", filme)
 
 app.run(port=5000, host="localhost", debug=True)

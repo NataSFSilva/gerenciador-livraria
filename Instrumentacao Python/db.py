@@ -1,43 +1,61 @@
-import model
-import json
+import mysql.connector
 from datetime import date
 
-Filmes = [
-    {
-        'id': 1,
-        'titulo': "Um Corpo que cai",
-        'genero': "Suspense",
-        'direcao': "Hitchcock",
-        'lancamento': "1958-07-21"
-    },
-    {
-        'id': 2,
-        'titulo': "Psicose",
-        'genero': "Suspense, terror",
-        'direcao': "Hitchcock",
-        'lancamento': "1961-11-01"
-    },
-    {
-        'id': 3,
-        'titulo': "Tempos Modernos",
-        'genero': "Comédia, romance",
-        'direcao': "Charlie Chaplin",
-        'lancamento': "1936-02-25"
-    }
-]
+mydb = mysql.connector.connect(
+    host='localhost',
+    user='userlimitado',
+    password='o11y',
+    database='Streaming'
+)
 
+cursorOps = mydb.cursor()
+
+def selectAll():
+    cursorOps.execute('SELECT * FROM filme')
+    filmes = list()
+    for filme in cursorOps.fetchall():
+        filmes.append(
+            {
+                "id": filme[0],
+                "titulo": filme[1],
+                "direcao": filme[2],
+                "genero": filme[3],
+                "lancamento": filme[4]
+            }
+        )
+    mydb.commit()
+    return filmes
+
+def selectOne(id):
+    cursorOps.execute(f"SELECT * FROM filme WHERE id = {id}")
+    filme = cursorOps.fetchall()
+
+    if len(filme) == 0:
+        return None
+    
+    return {
+        "id": filme[0],
+        "titulo": filme[1],
+        "direcao": filme[2],
+        "genero": filme[3],
+        "lancamento": filme[4]
+    }
 
 def insert(valores):
-    id: int
+    cursorOps.execute(f"INSERT INTO filme (titulo, genero, direcao, lancamento) VALUES ('{valores['titulo']}', '{valores['genero']}', '{valores['direcao']}', '{date.fromisoformat(valores['lancamento']).strftime('%Y-%m-%d')}'")
 
-    if len(Filmes) == 0:
-        id = 1
-    else:
-        id = Filmes[- 1]['id'] + 1
+    retorno = cursorOps.fetchall()
 
-    novo = model.Filme(id, valores['titulo'], valores['genero'],
-                       valores['direcao'], date.fromisoformat(valores['lancamento']).strftime("%Y-%m-%d"))
+    print(retorno)
 
-    Filmes.append(json.dumps(novo.__dict__))
+    # filmes = selectAll()
+    # resgate = filmes[len(filmes) - 1]
+    # novo = {
+    #         "id": resgate[0],
+    #         "titulo": resgate[1],
+    #         "genero": resgate[2],
+    #         "direcao": resgate[3],
+    #         "lancamento": resgate[4]
+    #     }
 
-    return novo
+    # return novo
