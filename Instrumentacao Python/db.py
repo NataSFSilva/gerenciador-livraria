@@ -5,13 +5,8 @@ mydb = mysql.connector.connect(
     host='localhost',
     port=3306,
     user='root',
-    password='sptech',
+    password='prvzcpy',
     database='Streaming'
-    # host='localhost',
-    # port=3307,
-    # user='userlimitado',
-    # password='o11y',
-    # database='Streaming' <-- Banco diferente
 )
 
 def selectAll():
@@ -25,13 +20,13 @@ def selectAll():
                 "titulo": filme[1],
                 "direcao": filme[2],
                 "genero": filme[3],
-                "lancamento": filme[4]
+                "lancamento": filme[4].strftime("%Y-%m-%d")
             }
         )
     mydb.commit()
     return filmes
 
-def selectOne(id):
+def selectById(id):
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE id = {id}")
     filme = cursorOps.fetchall()
@@ -45,7 +40,7 @@ def selectOne(id):
         "titulo": f[1],
         "direcao": f[2],
         "genero": f[3],
-        "lancamento": f[4]
+        "lancamento": f[4].strftime("%Y-%m-%d")
     }
 
 def insert(valores):
@@ -54,21 +49,13 @@ def insert(valores):
     mydb.commit()
 
     filmes = selectAll()
-    resgate = filmes[len(filmes) - 1]
-    # novo = {
-    #         "id": resgate[0],
-    #         "titulo": resgate[1],
-    #         "genero": resgate[2],
-    #         "direcao": resgate[3],
-    #         "lancamento": resgate[4]
-    #     }
+    novo = filmes[len(filmes) - 1]
 
-    return resgate
-    # return novo
+    return novo
 
 def selectByDiretor(d):
     cursorOps = mydb.cursor()
-    cursorOps.execute(f"SELECT * FROM filme WHERE diretor='{d}'")
+    cursorOps.execute(f"SELECT * FROM filme WHERE direcao='{d}'")
     filmes = cursorOps.fetchall()
 
     if len(filmes) == 0:
@@ -83,7 +70,7 @@ def selectByDiretor(d):
                 "titulo": f[1],
                 "direcao": f[2],
                 "genero": f[3],
-                "lancamento": f[4]
+                "lancamento": f[4].strftime("%Y-%m-%d")
             }
         )
     
@@ -91,7 +78,7 @@ def selectByDiretor(d):
 
 def selectByGenero(g):
     cursorOps = mydb.cursor()
-    cursorOps.execute(f"SELECT * FROM filme WHERE genero LIKE %'{g}'%")
+    cursorOps.execute(f"SELECT * FROM filme WHERE genero LIKE '%{g}%'")
     filmes = cursorOps.fetchall()
 
     if len(filmes) == 0:
@@ -106,8 +93,29 @@ def selectByGenero(g):
                 "titulo": f[1],
                 "direcao": f[2],
                 "genero": f[3],
-                "lancamento": f[4]
+                "lancamento": f[4].strftime("%Y-%m-%d")
             }
         )
     
     return retorno
+
+def update(id: int, body):
+    if (body['titulo'] == None or body['direcao'] == None or body['genero'] == None or body['lancamento'] == None) or selectById(id) == None:
+        return False
+    
+    comando = f"UPDATE filme SET titulo = '{body['titulo']}', direcao = '{body['direcao']}', genero = '{body['genero']}', lancamento = '{body['lancamento']}' WHERE id = {id}"
+    cursorOps = mydb.cursor()
+    cursorOps.execute(comando)
+    mydb.commit()
+
+    return True;
+
+def delete(id: int):
+    if selectById(id) == None:
+        return False
+
+    cursorOps = mydb.cursor()
+    cursorOps.execute(f"DELETE FROM filme WHERE id={id}")
+    mydb.commit()
+    
+    return True;
