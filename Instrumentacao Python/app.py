@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request
 import db
 from datetime import datetime
 
@@ -21,43 +21,49 @@ def responseGenerator(stts: int, msg: str, dt):
                 data=dt
             ), stts
 
-@app.route("/filmes", methods=["GET"])
+@app.route("/filmes", methods=["GET", "POST"])
 def getAll():
-    filmesList = db.selectAll()
+    if request.method == "GET":
+        filmesList = db.selectAll()
 
-    if len(filmesList) == 0:
-        return responseGenerator(204, "Sem conteúdo", None)
-
-
-    return responseGenerator(200, "Todos os valores", filmesList)
+        if len(filmesList) == 0:
+            return responseGenerator(204, "Sem conteúdo", None)
 
 
-@app.route("/filmes", methods=["POST"])
-def postObj():
-    novoFilme = request.json
-    try:
-        db.insert(novoFilme)
-        filmes = db.selectAll()
-        resgate = filmes[len(filmes) - 1]
-        retorno = {
-            "id": resgate[0],
-            "titulo": resgate[1],
-            "genero": resgate[2],
-            "direcao": resgate[3],
-            "lancamento": resgate[4]
-        }
-
+        return responseGenerator(200, "Todos os valores", filmesList)
+    elif request.method == "POST":
+        novoFilme = request.json
+        retorno = db.insert(novoFilme)
         return responseGenerator(201, "Inserção no banco de dados realizada com sucesso", retorno)
-    except Exception as e:
-        return responseGenerator(400, str(e), None)
-
+        # try:
+        # except Exception as e:
+        #     return responseGenerator(400, e, None)
+        
 @app.route("/filmes/<int:id>", methods=["GET"])
 def getOne(id: int):
     filme = db.selectOne(id)
     
     if filme == None:
-        return responseGenerator(404, "Valor não encontrado", None)
+        return responseGenerator(404, "Valor não encontrado", filme)
 
     return responseGenerator(200, "Valor encontrado", filme)
+
+@app.route("/filmes/<string:d>")
+def getByDiretor(d):
+    filmes = db.selectByDiretor(d)
+
+    if filmes == None:
+        return responseGenerator(404, "Valor não encontrado", filmes)
+    
+    return responseGenerator(200, "Valor encontrado", filmes)
+
+@app.route("/filmes/<string:g>")
+def getByGenero(g):
+    filmes = db.selectByGenero(g)
+
+    if filmes == None:
+        return responseGenerator(404, "Valor não encontrado", filmes)
+    
+    return responseGenerator(200, "Valor encontrado", filmes)
 
 app.run(port=5000, host="localhost", debug=True)
