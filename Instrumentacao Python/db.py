@@ -1,5 +1,7 @@
 import mysql.connector
 from datetime import date
+import logging
+logging.basicConfig(filename="aplicacao.log", format="%(asctime)s -  %(levelname)s %(message)s")
 
 mydb = mysql.connector.connect(
     host='localhost',
@@ -10,6 +12,7 @@ mydb = mysql.connector.connect(
 )
 
 def selectAll():
+    logging.info("Função selectAll() chamada")
     cursorOps = mydb.cursor()
     cursorOps.execute('SELECT * FROM filme')
     filmes = list()
@@ -23,17 +26,21 @@ def selectAll():
                 "lancamento": filme[4].strftime("%Y-%m-%d")
             }
         )
-    mydb.commit()
+    logging.info("Consulta de todos os registros no banco de dados")
+
     return filmes
 
 def selectById(id):
+    logging.info("Função selectById() chamada")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE id = {id}")
     filme = cursorOps.fetchall()
 
     if len(filme) == 0:
+        logging.info(f"Valor de ID {id} não encontrado encontrado no banco de dados")
         return None
     
+    logging.info(f"Valor de ID {id} encontrado")
     f = filme[0]
     return {
         "id": f[0],
@@ -44,6 +51,7 @@ def selectById(id):
     }
 
 def insert(valores):
+    logging.info("Função insert() chamada")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"INSERT INTO filme (titulo, genero, direcao, lancamento) VALUES ('{valores['titulo']}', '{valores['genero']}', '{valores['direcao']}', '{date.fromisoformat(valores['lancamento']).strftime('%Y-%m-%d')}')")
     mydb.commit()

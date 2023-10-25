@@ -1,6 +1,8 @@
 from flask import Flask, request
 import db
 from datetime import datetime
+import logging
+logging.basicConfig(filename="aplicacao.log", format="%(asctime)s -  %(levelname)s %(message)s")
 
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
@@ -28,14 +30,20 @@ def responseError(stts: int, msg: str):
 
 @app.route("/filmes", methods=["GET", "POST"])
 def getAll():
+    logging.info("Função getAll() foi chamada.")
     if request.method == "GET":
+        logging.info("Requisição com verbo GET.")
+
         filmesList = db.selectAll()
 
         if len(filmesList) == 0:
+            logging.info("Consulta no banco retornou conteúdo vazio")
             return responseSuccess(204, "Sem conteúdo")
         
         return responseSuccess(200, "Todos os valores", filmesList)
+    
     elif request.method == "POST":
+        logging.info("Requisição com verbo POST.")
         novoFilme = request.json
 
         retorno = db.insert(novoFilme)
