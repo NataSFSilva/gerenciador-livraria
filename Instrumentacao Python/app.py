@@ -29,10 +29,10 @@ def responseError(stts: int, msg: str):
     return response, stts
 
 @app.route("/filmes", methods=["GET", "POST"])
-def getAll():
-    logging.info("Função getAll() foi chamada.")
+def getPost():
+    logging.info("Função getPost() foi chamada")
     if request.method == "GET":
-        logging.info("Requisição com verbo GET.")
+        logging.info("Requisição com verbo GET no endpoint /filmes")
 
         filmesList = db.selectAll()
 
@@ -40,56 +40,79 @@ def getAll():
             logging.info("Consulta no banco retornou conteúdo vazio")
             return responseSuccess(204, "Sem conteúdo")
         
+        logging.info("Consulta sucedida")
         return responseSuccess(200, "Todos os valores", filmesList)
     
     elif request.method == "POST":
-        logging.info("Requisição com verbo POST.")
+        logging.info("Requisição com verbo POST no endpoint /filmes")
         novoFilme = request.json
+
+        if novoFilme['titulo'] == None or novoFilme['direcao'] == None or novoFilme['genero'] == None or novoFilme['lancamento'] == None:
+            logging.error("Falta de informações necessárias no corpo da requisição")
+            return responseError(400, "Dados necessários não identificados no corpo da requisição")
 
         retorno = db.insert(novoFilme)
 
+        logging.info("filme adicionado no banco de dados")
         return responseSuccess(201, "Inserção no banco de dados realizada com sucesso", retorno)
         
 @app.route("/filmes/<int:id>", methods=["GET", "PUT", "DELETE"])
 def opsById(id: int):
+    logging.info("Função opsById() chamada")
     if request.method == "GET":
+        logging.info("Requisição com verbo GET no endpoint /filmes/<int:id>")
         filme = db.selectById(id)
 
         if filme == None:
+            logging.error("Nenhum dado bate com a request")
             return responseError(404, "Valor não encontrado")
 
         return responseSuccess(200, "Valor encontrado", filme)
     elif request.method == "PUT":
+        logging.info("Requisição com verbo PUT no endpoint /filmes/<int:id>")
         response = db.update(id, request.json)
 
         if response == False:
+            logging.error("Requisição passada com elementos errados")
             return responseError(400, "Todos os campos são necessários para atualizar")
         
+        logging.info(f"Dado do ID {id} atualizado")
         return responseSuccess(204, "Valor atualizado com sucesso", None)
     elif request.method == "DELETE":
+        logging.info("Requisição com verbo DELETE no endpoint /filmes/<int:id>")
         response = db.delete(id)
 
         if response == False:
+            logging.error("Nenhum dado bate com a request")
             return responseError(404, "Valor não encontrado")
         
+        logging.info(f"Delete do dado de ID {id} realizado")
         return responseSuccess(204, "Valor deletado com sucesso", None)
 
-@app.route("/filmes/diretor/<string:d>")
+@app.route("/filmes/diretor/<string:d>", methods=["GET"])
 def getByDiretor(d):
+    logging.info("Função getByDiretor() chamada")
+    logging.info("Requisição com verbo GET no endpoint /filmes/diretor/<string:d>")
     filmes = db.selectByDiretor(d)
 
     if filmes == None:
+        logging.error("Nenhum dado bate com a request")
         return responseError(404, "Valor não encontrado")
     
+    logging.info("Consulta bem sucedida")
     return responseSuccess(200, "Valor encontrado", filmes)
 
-@app.route("/filmes/genero/<string:g>")
+@app.route("/filmes/genero/<string:g>", methods=["GET"])
 def getByGenero(g):
+    logging.info("Função getByGenero() chamada")
+    logging.info("Requisição com verbo GET no endpoint /filmes/genero/<string:g>")
     filmes = db.selectByGenero(g)
 
     if filmes == None:
+        logging.error("Nenhum dado bate com a request")
         return responseError(404, "Valor não encontrado")
     
+    logging.info("Consulta bem sucedida")
     return responseSuccess(200, "Valor encontrado", filmes)
 
 app.run(port=5000, host="localhost", debug=True)

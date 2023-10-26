@@ -37,7 +37,7 @@ def selectById(id):
     filme = cursorOps.fetchall()
 
     if len(filme) == 0:
-        logging.info(f"Valor de ID {id} não encontrado encontrado no banco de dados")
+        logging.warning(f"Valor de ID {id} não encontrado encontrado no banco de dados")
         return None
     
     logging.info(f"Valor de ID {id} encontrado")
@@ -62,6 +62,7 @@ def insert(valores):
     return novo
 
 def selectByDiretor(d):
+    logging.info("Função selectByDiretor() chamada")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE direcao='{d}'")
     filmes = cursorOps.fetchall()
@@ -85,6 +86,7 @@ def selectByDiretor(d):
     return retorno
 
 def selectByGenero(g):
+    logging.info("Função selectByGenero() chamada")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE genero LIKE '%{g}%'")
     filmes = cursorOps.fetchall()
@@ -108,6 +110,7 @@ def selectByGenero(g):
     return retorno
 
 def update(id: int, body):
+    logging.info("Função update() chamada")
     if (body['titulo'] == None or body['direcao'] == None or body['genero'] == None or body['lancamento'] == None) or selectById(id) == None:
         return False
     
@@ -119,6 +122,7 @@ def update(id: int, body):
     return True;
 
 def delete(id: int):
+    logging.info("Função delete() chamada")
     if selectById(id) == None:
         return False
 
