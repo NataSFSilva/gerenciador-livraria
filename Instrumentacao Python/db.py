@@ -52,10 +52,12 @@ def selectById(id):
 
 def insert(valores):
     logging.info("Função insert() chamada")
+    logging.info("Inserção no banco de dados")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"INSERT INTO filme (titulo, genero, direcao, lancamento) VALUES ('{valores['titulo']}', '{valores['genero']}', '{valores['direcao']}', '{date.fromisoformat(valores['lancamento']).strftime('%Y-%m-%d')}')")
     mydb.commit()
 
+    logging.info("Verificando dado inserido")
     filmes = selectAll()
     novo = filmes[len(filmes) - 1]
 
@@ -68,6 +70,7 @@ def selectByDiretor(d):
     filmes = cursorOps.fetchall()
 
     if len(filmes) == 0:
+        logging.warning(f"Nenhum filme dirigido por {d} foi encontrado no banco de dados")
         return None
     
     retorno = list()

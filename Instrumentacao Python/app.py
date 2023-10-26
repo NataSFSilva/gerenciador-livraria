@@ -3,6 +3,25 @@ import db
 from datetime import datetime
 import logging
 logging.basicConfig(filename="aplicacao.log", format="%(asctime)s -  %(levelname)s %(message)s")
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor,
+    ConsoleSpanExporter,
+)
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+
+resource = Resource.create({SERVICE_NAME: "flask-jornada"})
+trace.set_tracer_provider(TracerProvider(resource=resource))
+
+otlp_exporter = OTLPSpanExporter(
+    endpoint="http://localhost:4318",
+    headers={},
+)
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
 
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
@@ -53,7 +72,7 @@ def getPost():
 
         retorno = db.insert(novoFilme)
 
-        logging.info("filme adicionado no banco de dados")
+        logging.info("Filme adicionado no banco de dados")
         return responseSuccess(201, "Inserção no banco de dados realizada com sucesso", retorno)
         
 @app.route("/filmes/<int:id>", methods=["GET", "PUT", "DELETE"])
