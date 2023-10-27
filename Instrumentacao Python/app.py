@@ -2,7 +2,6 @@ from flask import Flask, request
 import db
 from datetime import datetime
 import logging
-logging.basicConfig(filename="aplicacao.log", format="%(asctime)s -  %(levelname)s %(message)s")
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
@@ -26,6 +25,8 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 app.json.sort_keys = False
+
+logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
 
 def responseSuccess(stts: int, msg: str, dt=None):
     response = {

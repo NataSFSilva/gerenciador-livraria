@@ -37,7 +37,7 @@ def selectById(id):
     filme = cursorOps.fetchall()
 
     if len(filme) == 0:
-        logging.warning(f"Valor de ID {id} não encontrado encontrado no banco de dados")
+        logging.warning(f"Valor de ID {id} não encontrado no banco de dados")
         return None
     
     logging.info(f"Valor de ID {id} encontrado")

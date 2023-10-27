@@ -1,0 +1,40 @@
+2023-10-27 11:28:03,810 -  INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2023-10-27 11:28:03,810 -  INFO [33mPress CTRL+C to quit[0m
+2023-10-27 11:28:03,815 -  INFO  * Restarting with stat
+2023-10-27 11:28:06,293 -  WARNING  * Debugger is active!
+2023-10-27 11:28:06,322 -  INFO  * Debugger PIN: 442-931-487
+2023-10-27 11:29:24,034 -  INFO 127.0.0.1 - - [27/Oct/2023 11:29:24] "[35m[1mPOST /filmes HTTP/1.1[0m" 201 -
+2023-10-27 11:31:38,057 -  INFO 127.0.0.1 - - [27/Oct/2023 11:31:38] "GET /filmes HTTP/1.1" 200 -
+2023-10-27 11:31:46,287 -  WARNING Valor de ID 10 não encontrado no banco de dados
+2023-10-27 11:31:46,306 -  ERROR Nenhum dado bate com a request
+2023-10-27 11:31:46,307 -  INFO 127.0.0.1 - - [27/Oct/2023 11:31:46] "[33mGET /filmes/10 HTTP/1.1[0m" 404 -
+2023-10-27 11:32:03,838 -  INFO 127.0.0.1 - - [27/Oct/2023 11:32:03] "GET /filmes/diretor/Hitchcock HTTP/1.1" 200 -
+2023-10-27 11:32:38,841 -  INFO 127.0.0.1 - - [27/Oct/2023 11:32:38] "GET /filmes/genero/sl HTTP/1.1" 200 -
+2023-10-27 11:33:13,506 -  INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2023-10-27 11:33:13,507 -  INFO [33mPress CTRL+C to quit[0m
+2023-10-27 11:33:13,509 -  INFO  * Restarting with stat
+2023-10-27 11:33:15,823 -  WARNING  * Debugger is active!
+2023-10-27 11:33:15,829 -  INFO  * Debugger PIN: 442-931-487
+2023-10-27 11:36:34,684 -  WARNING Valor de ID 6 não encontrado no banco de dados
+2023-10-27 11:36:34,684 -  ERROR Requisição passada com elementos errados
+2023-10-27 11:36:34,685 -  INFO 127.0.0.1 - - [27/Oct/2023 11:36:34] "[31m[1mPUT /filmes/6 HTTP/1.1[0m" 400 -
+2023-10-27 11:38:06,331 -  INFO  * Detected change in 'c:\\Users\\nata.silva\\Documents\\gerenciador-streaming\\Instrumentacao Python\\app.py', reloading
+2023-10-27 11:38:06,447 -  INFO  * Restarting with stat
+2023-10-27 11:38:09,291 -  WARNING  * Debugger is active!
+2023-10-27 11:38:09,299 -  INFO  * Debugger PIN: 442-931-487
+2023-10-27 11:38:25,501 -  INFO 127.0.0.1 - - [27/Oct/2023 11:38:25] "GET /filmes HTTP/1.1" 200 -
+2023-10-27 11:41:01,035 -  INFO 127.0.0.1 - - [27/Oct/2023 11:41:01] "[35m[1mPUT /filmes/11 HTTP/1.1[0m" 204 -
+2023-10-27 11:41:06,933 -  INFO 127.0.0.1 - - [27/Oct/2023 11:41:06] "GET /filmes HTTP/1.1" 200 -
+2023-10-27 11:48:06,665 -  WARNING Valor de ID 10 não encontrado no banco de dados
+2023-10-27 11:48:06,665 -  ERROR Nenhum dado bate com a request
+2023-10-27 11:48:06,666 -  INFO 127.0.0.1 - - [27/Oct/2023 11:48:06] "[33mGET /filmes/10 HTTP/1.1[0m" 404 -
+2023-10-27 11:48:19,559 -  INFO 127.0.0.1 - - [27/Oct/2023 11:48:19] "GET /filmes/11 HTTP/1.1" 200 -
+2023-10-27 11:54:37,375 -  INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:5000
+2023-10-27 11:54:37,375 -  INFO [33mPress CTRL+C to quit[0m
+2023-10-27 11:54:37,375 -  INFO  * Restarting with stat
+2023-10-27 11:54:39,515 -  WARNING  * Debugger is active!
+2023-10-27 11:54:39,525 -  INFO  * Debugger PIN: 442-931-487
+2023-10-27 11:54:48,856 -  INFO 127.0.0.1 - - [27/Oct/2023 11:54:48] "GET /filmes HTTP/1.1" 200 -
