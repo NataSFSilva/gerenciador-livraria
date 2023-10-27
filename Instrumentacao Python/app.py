@@ -27,6 +27,7 @@ app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 app.json.sort_keys = False
 
 logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
+logging.getLogger().setLevel(logging.DEBUG)
 
 def responseSuccess(stts: int, msg: str, dt=None):
     response = {
