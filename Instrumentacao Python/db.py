@@ -115,6 +115,7 @@ def selectByGenero(g):
 def update(id: int, body):
     logging.info("Função update() chamada")
     if (body['titulo'] == None or body['direcao'] == None or body['genero'] == None or body['lancamento'] == None) or selectById(id) == None:
+        logging.debug("Request body: " + body)
         return False
     
     comando = f"UPDATE filme SET titulo = '{body['titulo']}', direcao = '{body['direcao']}', genero = '{body['genero']}', lancamento = '{body['lancamento']}' WHERE id = {id}"
@@ -127,6 +128,7 @@ def update(id: int, body):
 def delete(id: int):
     logging.info("Função delete() chamada")
     if selectById(id) == None:
+        logging.debug("Provided ID is null, returning false")
         return False
 
     cursorOps = mydb.cursor()
