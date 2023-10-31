@@ -14,9 +14,11 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
+# Configuração do OpenTelemetry
 resource = Resource.create({SERVICE_NAME: "flask-jornada"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 
+# Configuração do OTLP Exporter com HTTP/JSON
 otlp_exporter = OTLPSpanExporter(
     endpoint="http://localhost:4318",
     headers={},
@@ -30,6 +32,9 @@ app.json.sort_keys = False
 
 logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
 logging.getLogger().setLevel(logging.DEBUG)
+
+# Instrumentando Flask
+FlaskInstrumentor().instrument_app(app)
 
 def responseSuccess(stts: int, msg: str, dt=None):
     response = {
@@ -53,33 +58,33 @@ def responseError(stts: int, msg: str):
 
 @app.route("/filmes", methods=["GET", "POST"])
 def getPost():
-    logging.info("Function getPost() called")
-    if request.method == "GET":
-        logging.info("GET request in the endpoint /filmes")
+        logging.info("Function getPost() called")
+        if request.method == "GET":
+            logging.info("GET request in the endpoint /filmes")
 
-        filmesList = db.selectAll()
+            filmesList = db.selectAll()
 
-        if len(filmesList) == 0:
-            logging.info("Database query returned empty content")
-            return responseSuccess(204, "No content")
-        
-        logging.debug("Data: " + str(filmesList))
-        logging.info("Success query")
-        return responseSuccess(200, "Success request", filmesList)
-    
-    elif request.method == "POST":
-        logging.info("POST request in the endpoint /filmes")
-        novoFilme = request.json
+            if len(filmesList) == 0:
+                logging.info("Database query returned empty content")
+                return responseSuccess(204, "No content")
 
-        if novoFilme['titulo'] == None or novoFilme['direcao'] == None or novoFilme['genero'] == None or novoFilme['lancamento'] == None:
-            logging.warning("Mandatory data not provided")
-            return responseError(400, "Bad request")
+            logging.debug("Data: " + str(filmesList))
+            logging.info("Success query")
+            return responseSuccess(200, "Success request", filmesList)
 
-        retorno = db.insert(novoFilme)
+        elif request.method == "POST":
+            logging.info("POST request in the endpoint /filmes")
+            novoFilme = request.json
 
-        logging.debug("Data: " + json.dumps(retorno))
-        logging.info("Data added to the database")
-        return responseSuccess(201, "Successful database insertion", retorno)
+            if novoFilme['titulo'] == None or novoFilme['direcao'] == None or novoFilme['genero'] == None or novoFilme['lancamento'] == None:
+                logging.warning("Mandatory data not provided")
+                return responseError(400, "Bad request")
+
+            retorno = db.insert(novoFilme)
+
+            logging.debug("Data: " + json.dumps(retorno))
+            logging.info("Data added to the database")
+            return responseSuccess(201, "Successful database insertion", retorno)
         
 @app.route("/filmes/<int:id>", methods=["GET", "PUT", "DELETE"])
 def opsById(id: int):
