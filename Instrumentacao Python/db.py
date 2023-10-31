@@ -12,10 +12,11 @@ mydb = mysql.connector.connect(
 )
 
 def selectAll():
-    logging.info("Função selectAll() chamada")
+    logging.info("Function selectAll() was called")
     cursorOps = mydb.cursor()
     cursorOps.execute('SELECT * FROM filme')
     filmes = list()
+
     for filme in cursorOps.fetchall():
         filmes.append(
             {
@@ -26,21 +27,22 @@ def selectAll():
                 "lancamento": filme[4].strftime("%Y-%m-%d")
             }
         )
-    logging.info("Consulta de todos os registros no banco de dados")
+
+    logging.info("All selected data")
 
     return filmes
 
 def selectById(id):
-    logging.info("Função selectById() chamada")
+    logging.info("Function selectById() was called")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE id = {id}")
     filme = cursorOps.fetchall()
 
     if len(filme) == 0:
-        logging.warning(f"Valor de ID {id} não encontrado no banco de dados")
+        logging.warning(f"ID {id} value not found")
         return None
     
-    logging.info(f"Valor de ID {id} encontrado")
+    logging.info(f"ID {id} film has been found")
     f = filme[0]
     return {
         "id": f[0],
@@ -51,26 +53,26 @@ def selectById(id):
     }
 
 def insert(valores):
-    logging.info("Função insert() chamada")
-    logging.info("Inserção no banco de dados")
+    logging.info("Function insert() was called")
+    logging.info("Insertion into the database")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"INSERT INTO filme (titulo, genero, direcao, lancamento) VALUES ('{valores['titulo']}', '{valores['genero']}', '{valores['direcao']}', '{date.fromisoformat(valores['lancamento']).strftime('%Y-%m-%d')}')")
     mydb.commit()
 
-    logging.info("Verificando dado inserido")
+    logging.info("Verifying inserted data")
     filmes = selectAll()
     novo = filmes[len(filmes) - 1]
 
     return novo
 
 def selectByDiretor(d):
-    logging.info("Função selectByDiretor() chamada")
+    logging.info("Function selectByDiretor() was called")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE direcao='{d}'")
     filmes = cursorOps.fetchall()
 
     if len(filmes) == 0:
-        logging.warning(f"Nenhum filme dirigido por {d} foi encontrado no banco de dados")
+        logging.warning(f"No films directed by {d} were found")
         return None
     
     retorno = list()
@@ -89,12 +91,13 @@ def selectByDiretor(d):
     return retorno
 
 def selectByGenero(g):
-    logging.info("Função selectByGenero() chamada")
+    logging.info("Function selectByGenero() was called")
     cursorOps = mydb.cursor()
     cursorOps.execute(f"SELECT * FROM filme WHERE genero LIKE '%{g}%'")
     filmes = cursorOps.fetchall()
 
     if len(filmes) == 0:
+        logging.warning(f"No films  of the {g} genre were found")
         return None
     
     retorno = list()
@@ -113,7 +116,7 @@ def selectByGenero(g):
     return retorno
 
 def update(id: int, body):
-    logging.info("Função update() chamada")
+    logging.info("Function update() was called")
     if (body['titulo'] == None or body['direcao'] == None or body['genero'] == None or body['lancamento'] == None) or selectById(id) == None:
         logging.debug("Request body: " + body)
         return False
@@ -126,7 +129,7 @@ def update(id: int, body):
     return True;
 
 def delete(id: int):
-    logging.info("Função delete() chamada")
+    logging.info("Function delete() was called")
     if selectById(id) == None:
         logging.debug("Provided ID is null, returning false")
         return False

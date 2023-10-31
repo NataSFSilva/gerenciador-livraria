@@ -1,6 +1,8 @@
 from flask import Flask, request
 import db
 from datetime import datetime
+import json
+# from flask_restplus import Api
 import logging
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -61,7 +63,7 @@ def getPost():
             logging.info("Database query returned empty content")
             return responseSuccess(204, "No content")
         
-        logging.debug("Data: " + filmesList)
+        logging.debug("Data: " + str(filmesList))
         logging.info("Success query")
         return responseSuccess(200, "Success request", filmesList)
     
@@ -75,7 +77,7 @@ def getPost():
 
         retorno = db.insert(novoFilme)
 
-        logging.debug("Data: " + retorno)
+        logging.debug("Data: " + json.dumps(retorno))
         logging.info("Data added to the database")
         return responseSuccess(201, "Successful database insertion", retorno)
         
@@ -90,7 +92,7 @@ def opsById(id: int):
             logging.warning("Data not found")
             return responseError(404, "Value not found")
 
-        logging.debug("Data: " + filme)
+        logging.debug("Data: " + json.dumps(filme))
         logging.info("Found value")
         return responseSuccess(200, "Success request", filme)
     elif request.method == "PUT":
@@ -124,7 +126,7 @@ def getByDiretor(d):
         logging.warning("Data not found")
         return responseError(404, "Value not found")
     
-    logging.debug("Data: " + filmes)
+    logging.debug("Data: " + str(filmes))
     logging.info("Found value")
     return responseSuccess(200, "Success request", filmes)
 
@@ -138,7 +140,7 @@ def getByGenero(g):
         logging.warning("Data not found")
         return responseError(404, "Value not found")
     
-    logging.debug("Data: " + filmes)
+    logging.debug("Data: " + str(filmes))
     logging.info("Success request")
     return responseSuccess(200, "Found value with sucess", filmes)
 
