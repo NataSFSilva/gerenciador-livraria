@@ -2,7 +2,7 @@ from flask import Flask, request
 import db
 from datetime import datetime
 import json
-# from flask_restplus import Api
+from flask_restplus import Api
 import logging
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -26,12 +26,19 @@ otlp_exporter = OTLPSpanExporter(
 span_processor = BatchSpanProcessor(otlp_exporter)
 trace.get_tracer_provider().add_span_processor(span_processor)
 
+# Configução da API
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 app.json.sort_keys = False
+api_extension = Api(
+    title="Flask API :)",
+    version='1.0',
+    description="Minha primeira API em Python e primeira vez codando nessa linguagem estranha"
+)
 
+# Configuração dos logs
 logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 
 # Instrumentando Flask
 FlaskInstrumentor().instrument_app(app)
