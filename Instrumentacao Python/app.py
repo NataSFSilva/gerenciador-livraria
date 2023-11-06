@@ -1,9 +1,10 @@
-from flask import Flask, request
 import db
+from flask import Flask, request
 from datetime import datetime
 import json
-from flask_restplus import Api
 import logging
+import logging_loki
+from prometheus_flask_exporter import PrometheusMetrics
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
@@ -30,15 +31,22 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 app = Flask(__name__)
 app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 app.json.sort_keys = False
-api_extension = Api(
-    title="Flask API :)",
-    version='1.0',
-    description="Minha primeira API em Python e primeira vez codando nessa linguagem estranha"
-)
+
+# Configução das métricas
+metrics = PrometheusMetrics(app)
 
 # Configuração dos logs
-logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
-logging.getLogger().setLevel(logging.INFO)
+formatter = logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
+logging.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
+handler = logging_loki.LokiHandler(
+
+    url="http://grafana-loki-hml.dock.tech/loki/api/v1/push",
+    tags={'jornada': 'loki'},
+    version="1",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # Instrumentando Flask
 FlaskInstrumentor().instrument_app(app)

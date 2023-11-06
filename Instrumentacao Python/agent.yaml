@@ -3,6 +3,9 @@ metadata:
   name: grafana-agent-traces
 apiVersion: v1
 data:
+  # - job_name: 'flaskapi_gerenciador'
+  # static_configs:
+  #   - targets: ['flask-service.flaskapi.svc.cluster.local:5000']
   agent.yaml: |
     traces:
         configs:
