@@ -34,16 +34,16 @@ app.json.sort_keys = False
 
 # Configução das métricas
 metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Application info', version='1.0')
 
 # Configuração dos logs
-formatter = logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s")
-logging.setLevel(logging.INFO)
+formatter = logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(levelname)s %(message)s")
+# logging.getLogger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 handler = logging_loki.LokiHandler(
-
     url="http://grafana-loki-hml.dock.tech/loki/api/v1/push",
     tags={'jornada': 'loki'},
-    version="1",
+    version="1"
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -73,6 +73,7 @@ def responseError(stts: int, msg: str):
 
 @app.route("/filmes", methods=["GET", "POST"])
 def getPost():
+    with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
         logging.info("Function getPost() called")
         if request.method == "GET":
             logging.info("GET request in the endpoint /filmes")
@@ -103,65 +104,68 @@ def getPost():
         
 @app.route("/filmes/<int:id>", methods=["GET", "PUT", "DELETE"])
 def opsById(id: int):
-    logging.info("Function opsById() called")
-    if request.method == "GET":
-        logging.info("GET request in the endpoint /filmes/<int:id>")
-        filme = db.selectById(id)
+    with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
+        logging.info("Function opsById() called")
+        if request.method == "GET":
+            logging.info("GET request in the endpoint /filmes/<int:id>")
+            filme = db.selectById(id)
 
-        if filme == None:
-            logging.warning("Data not found")
-            return responseError(404, "Value not found")
+            if filme == None:
+                logging.warning("Data not found")
+                return responseError(404, "Value not found")
 
-        logging.debug("Data: " + json.dumps(filme))
-        logging.info("Found value")
-        return responseSuccess(200, "Success request", filme)
-    elif request.method == "PUT":
-        logging.info("PUT request in the endpoint /filmes/<int:id>")
-        response = db.update(id, request.json)
+            logging.debug("Data: " + json.dumps(filme))
+            logging.info("Found value")
+            return responseSuccess(200, "Success request", filme)
+        elif request.method == "PUT":
+            logging.info("PUT request in the endpoint /filmes/<int:id>")
+            response = db.update(id, request.json)
 
-        if response == False:
-            logging.warning("Mandatory data not provided")
-            return responseError(400, "Bad request")
-        
-        logging.info(f"Data of ID {id} updated")
-        return responseSuccess(204, "Value updated successfully")
-    elif request.method == "DELETE":
-        logging.info("DELETE request in the endpoint /filmes/<int:id>")
-        response = db.delete(id)
+            if response == False:
+                logging.warning("Mandatory data not provided")
+                return responseError(400, "Bad request")
 
-        if response == False:
-            logging.warning("Data not found")
-            return responseError(404, "Value not found")
-        
-        logging.info(f"Data of ID {id} deleted")
-        return responseSuccess(204, "Value deleted successfully", None)
+            logging.info(f"Data of ID {id} updated")
+            return responseSuccess(204, "Value updated successfully")
+        elif request.method == "DELETE":
+            logging.info("DELETE request in the endpoint /filmes/<int:id>")
+            response = db.delete(id)
+
+            if response == False:
+                logging.warning("Data not found")
+                return responseError(404, "Value not found")
+
+            logging.info(f"Data of ID {id} deleted")
+            return responseSuccess(204, "Value deleted successfully", None)
 
 @app.route("/filmes/diretor/<string:d>", methods=["GET"])
 def getByDiretor(d):
-    logging.info("Function getByDiretor() called")
-    logging.info("GET request in the endpoint /filmes/diretor/<string:d>")
-    filmes = db.selectByDiretor(d)
+    with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
+        logging.info("Function getByDiretor() called")
+        logging.info("GET request in the endpoint /filmes/diretor/<string:d>")
+        filmes = db.selectByDiretor(d)
 
-    if filmes == None:
-        logging.warning("Data not found")
-        return responseError(404, "Value not found")
-    
-    logging.debug("Data: " + str(filmes))
-    logging.info("Found value")
-    return responseSuccess(200, "Success request", filmes)
+        if filmes == None:
+            logging.warning("Data not found")
+            return responseError(404, "Value not found")
+
+        logging.debug("Data: " + str(filmes))
+        logging.info("Found value")
+        return responseSuccess(200, "Success request", filmes)
 
 @app.route("/filmes/genero/<string:g>", methods=["GET"])
 def getByGenero(g):
-    logging.info("Function getByGenero() called")
-    logging.info("GET request in the endpoint /filmes/genero/<string:g>")
-    filmes = db.selectByGenero(g)
+    with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
+        logging.info("Function getByGenero() called")
+        logging.info("GET request in the endpoint /filmes/genero/<string:g>")
+        filmes = db.selectByGenero(g)
 
-    if filmes == None:
-        logging.warning("Data not found")
-        return responseError(404, "Value not found")
-    
-    logging.debug("Data: " + str(filmes))
-    logging.info("Success request")
-    return responseSuccess(200, "Found value with sucess", filmes)
+        if filmes == None:
+            logging.warning("Data not found")
+            return responseError(404, "Value not found")
+
+        logging.debug("Data: " + str(filmes))
+        logging.info("Success request")
+        return responseSuccess(200, "Found value with sucess", filmes)
 
 app.run(port=5000, host="localhost", debug=True)

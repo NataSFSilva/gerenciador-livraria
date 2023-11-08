@@ -1,0 +1,13 @@
+version: '1.0'
+services:
+  db:
+    image: mysql
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: prvzcpy
+    volumes:
+      - ./Instrumentacao\ Python/data:/var/lib/mysql
+    restart: always
+  api:
+    build: "./Instrumentacao\ Python"
+    container_name: python-container
