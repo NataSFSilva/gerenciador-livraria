@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import date
 import logging
-logging.basicConfig(filename="aplicacao.log", format="%(asctime)s -  %(levelname)s %(message)s")
+logging.basicConfig(filename="aplicacao.log", format="%(levelname)s %(message)s")
 
 mydb = mysql.connector.connect(
     host='localhost',
