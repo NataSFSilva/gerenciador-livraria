@@ -2,30 +2,32 @@ version: '1.5'
 services:
   db:
     image: mysql
-    container_name: local-database
+    container_name: database-local
     environment:
       MYSQL_ROOT_PASSWORD: prvzcpy
     volumes:
-      - .api/db/data:/var/lib/mysql
-    restart: always
+      - api/db/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    # restart: always
 
   api:
     build: "./api"
     container_name: python-container
-    restart: always
     volumes:
-      - ./api:/home/python/app
+      - /api:/home/python/app
     ports:
       - "5000:5000"
     depends_on:
       - db
+    # restart: always
   
   loki:
     image: grafana/loki:2.7.5
     ports:
       - 3100:3100
     command:
-    - -config.file="api/config/loki-config.yaml"
+    - -config.file=./api/config/loki-config.yml
     - -print-config-stderr=true
     networks:
       - loki
@@ -34,7 +36,7 @@ services:
     image: grafana/promtail:2.6.1
     volumes:
       - /api/log:/var/log
-    command: -config.file="api/config/promtail-config.yml"
+    command: -config.file=./api/config/promtail-config.yaml
     networks:
       - loki
   

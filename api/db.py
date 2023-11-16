@@ -4,11 +4,11 @@ import logging
 logging.basicConfig(filename="aplicacao.log", format="%(levelname)s %(message)s")
 
 mydb = mysql.connector.connect(
-    host='localhost',
+    host='db',
     port=3306,
     user='root',
     password='prvzcpy',
-    database='Streaming'
+    database='streaming'
 )
 
 def selectAll():
