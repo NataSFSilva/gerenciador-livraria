@@ -1,3 +1,5 @@
+CREATE DATABASE Streaming;
+
 USE Streaming;
 
 CREATE TABLE filme (

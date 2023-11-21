@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: prvzcpy
     volumes:
-      - api/db/data:/var/lib/mysql
+      - /var/lib/mysql
     ports:
       - "3306:3306"
     # restart: always
