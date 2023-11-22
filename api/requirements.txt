@@ -6,5 +6,3 @@ opentelemetry-api
 opentelemetry-exporter-otlp
 python-logging-loki
 mysql-connector-python
-# json
-# logging
