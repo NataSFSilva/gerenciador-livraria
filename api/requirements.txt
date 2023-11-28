@@ -1,8 +1,12 @@
 Flask
 datetime
-prometheus-flask-exporter
-opentelemetry-sdk
 opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-flask
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-distro
+opentelemetry_wrapper
+prometheus-flask-exporter
 opentelemetry-exporter-otlp
 python-logging-loki
 mysql-connector-python

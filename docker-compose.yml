@@ -12,7 +12,7 @@ services:
     # restart: always
 
   api:
-    build: "/api"
+    build: "./api"
     container_name: python-container
     volumes:
       - /api:/home/python/app
@@ -26,16 +26,19 @@ services:
     ports:
       - 3100:3100
     command:
-    - -config.file=./api/config/loki-config.yml
+    - -config.file="/etc/config/loki-config.yaml"
     - -print-config-stderr=true
     networks:
       - loki
+    volumes:
+      - ./api/config/loki-config.yaml:/etc/config/loki-config.yaml
   
   promtail:
     image: grafana/promtail:2.6.1
     volumes:
       - /api/log:/var/log
-    command: -config.file=./api/config/promtail-config.yaml
+      - ./api/config/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+    command: -config.file="/etc/promtail/promtail-config.yaml"
     networks:
       - loki
   

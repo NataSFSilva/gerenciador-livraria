@@ -1,6 +1,6 @@
-CREATE DATABASE Streaming;
+CREATE DATABASE streaming;
 
-USE Streaming;
+USE streaming;
 
 CREATE TABLE filme (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
