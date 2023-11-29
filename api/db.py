@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(filename="aplicacao.log", format="%(levelname)s %(message)s")
 
 mydb = mysql.connector.connect(
-    host='172.21.0.2',
+    host='database-local',
     port=3306,
     user='root',
     password='prvzcpy',
