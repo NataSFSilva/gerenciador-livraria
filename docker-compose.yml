@@ -21,7 +21,7 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    command: ["./wait-for-db.sh"]
+    command: bash C:/Users/nata.silva/Documents/gerenciador-streaming/wait-for-db.sh
   
   loki:
     image: grafana/loki:2.7.5
@@ -33,7 +33,7 @@ services:
     networks:
       - loki
     volumes:
-      - ./api/config/loki-config.yaml:/etc/loki/loki-config.yaml
+      - /etc/loki/loki-config.yaml
   
   promtail:
     image: grafana/promtail:2.6.1
