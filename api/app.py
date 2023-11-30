@@ -37,7 +37,7 @@ metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Application info', version='1.0')
 
 # Configuração dos logs
-formatter = logging.basicConfig(level=logging.INFO, filename="./api/log/aplicacao.log", format="%(levelname)s %(message)s")
+formatter = logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(levelname)s %(message)s")
 # logging.getLogger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 handler = logging_loki.LokiHandler(
