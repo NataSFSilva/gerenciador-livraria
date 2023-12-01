@@ -1,4 +1,4 @@
-version: '2.3'
+version: '2.5'
 services:
   db:
     image: mysql
@@ -21,10 +21,9 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    command: bash C:/Users/nata.silva/Documents/gerenciador-streaming/wait-for-db.sh
   
   loki:
-    image: grafana/loki:2.7.5
+    build: ./etc/loki
     ports:
       - 3100:3100
     command:
@@ -32,14 +31,12 @@ services:
     - -print-config-stderr=true
     networks:
       - loki
-    volumes:
-      - /etc/loki/loki-config.yaml
   
   promtail:
     image: grafana/promtail:2.6.1
     volumes:
       - /aplicacao.log:/var/log
-      - ./api/config/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - ./etc/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
     command: -config.file="/etc/promtail/promtail-config.yaml"
     networks:
       - loki
