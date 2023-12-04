@@ -1,19 +1,19 @@
-import db
-from flask import Flask, request
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
+
+import db
 import logging_loki
-from prometheus_flask_exporter import PrometheusMetrics
+from flask import Flask, request
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-    ConsoleSpanExporter,
-)
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import \
+    OTLPSpanExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import (BatchSpanProcessor,
+                                            ConsoleSpanExporter)
+from prometheus_flask_exporter import PrometheusMetrics
 
 # Configuração do OpenTelemetry
 resource = Resource.create({SERVICE_NAME: "flask-jornada"})
@@ -29,47 +29,53 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 
 # Configução da API
 app = Flask(__name__)
-app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
+app.config["JSONIFY_MIMETYPE"] = "application/json; charset=utf-8"
 app.json.sort_keys = False
 
 # Configução das métricas
 metrics = PrometheusMetrics(app)
-metrics.info('app_info', 'Application info', version='1.0')
+metrics.info("app_info", "Application info", version="1.0")
 
 # Configuração dos logs
-formatter = logging.basicConfig(level=logging.INFO, filename="aplicacao.log", format="%(levelname)s %(message)s")
+formatter = logging.basicConfig(
+    level=logging.INFO, filename="aplicacao.log", format="%(levelname)s %(message)s"
+)
 # logging.getLogger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 handler = logging_loki.LokiHandler(
     url="http://grafana-loki-hml.dock.tech/loki/api/v1/push",
-    tags={'jornada': 'loki'},
-    version="1"
+    tags={"jornada": "loki"},
+    version="1",
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 # Instrumentando Flask
 FlaskInstrumentor().instrument_app(app)
 
+
 def responseSuccess(stts: int, msg: str, dt=None):
     response = {
-            'status': stts,
-            'datetime': datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            'message': msg
+        "status": stts,
+        "datetime": datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+        "message": msg,
     }
 
     if dt is not None:
-        response['data'] = dt
-    
+        response["data"] = dt
+
     return response, stts
-    
+
+
 def responseError(stts: int, msg: str):
     response = {
-            'status': stts,
-            'datetime': datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
-            'message': msg
+        "status": stts,
+        "datetime": datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+        "message": msg,
     }
     return response, stts
+
 
 @app.route("/filmes", methods=["GET", "POST"])
 def getPost():
@@ -92,7 +98,12 @@ def getPost():
             logging.info("POST request in the endpoint /filmes")
             novoFilme = request.json
 
-            if novoFilme['titulo'] == None or novoFilme['direcao'] == None or novoFilme['genero'] == None or novoFilme['lancamento'] == None:
+            if (
+                novoFilme["titulo"] == None
+                or novoFilme["direcao"] == None
+                or novoFilme["genero"] == None
+                or novoFilme["lancamento"] == None
+            ):
                 logging.warning("Mandatory data not provided")
                 return responseError(400, "Bad request")
 
@@ -101,7 +112,8 @@ def getPost():
             logging.debug("Data: " + json.dumps(retorno))
             logging.info("Data added to the database")
             return responseSuccess(201, "Successful database insertion", retorno)
-        
+
+
 @app.route("/filmes/<int:id>", methods=["GET", "PUT", "DELETE"])
 def opsById(id: int):
     with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
@@ -138,6 +150,7 @@ def opsById(id: int):
             logging.info(f"Data of ID {id} deleted")
             return responseSuccess(204, "Value deleted successfully", None)
 
+
 @app.route("/filmes/diretor/<string:d>", methods=["GET"])
 def getByDiretor(d):
     with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
@@ -153,6 +166,7 @@ def getByDiretor(d):
         logging.info("Found value")
         return responseSuccess(200, "Success request", filmes)
 
+
 @app.route("/filmes/genero/<string:g>", methods=["GET"])
 def getByGenero(g):
     with trace.get_tracer(__name__).start_as_current_span("flask-jonrada-manual"):
@@ -167,5 +181,3 @@ def getByGenero(g):
         logging.debug("Data: " + str(filmes))
         logging.info("Success request")
         return responseSuccess(200, "Found value with sucess", filmes)
-
-app.run(port=5000, host="localhost", debug=True)

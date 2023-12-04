@@ -10,16 +10,16 @@ services:
       - /var/lib/mysql
       - ./api/db/CriarDatabase.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       app_net:
         ipv4_address: 172.21.0.2
 
   api:
-    build: "/api"
+    build: "./api"
     container_name: python-container
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       WAIT_HOSTS: db:3306
     depends_on:
@@ -27,28 +27,31 @@ services:
     networks:
       app_net:
         ipv4_address: 172.21.0.3
-  
+
   loki:
-    build: /etc/loki
+    build: "./etc/loki"
+    image: grafana/loki:latest
     ports:
       - 3100:3100
     command:
-    - -config.file="/etc/loki/loki-config.yaml"
-    - -print-config-stderr=true
+      - -config.file=/etc/loki/loki-config.yaml
+      - -print-config-stderr=true
+    volumes:
+      - ./etc/loki/loki-config.yaml:/etc/loki/loki-config.yaml
     networks:
       - loki
-  
+
   promtail:
     image: grafana/promtail:2.6.1
     volumes:
-      - /aplicacao.log:/var/log
+      - ./aplicacao.log:/log
       - ./etc/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
     command: -config.file="/etc/promtail/promtail-config.yaml"
     networks:
       - loki
-  
+
   grafana:
-    build: etc/grafana
+    build: "./etc/grafana"
     ports:
       - "3200:3200"
     networks:

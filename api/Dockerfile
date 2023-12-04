@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM arm64v8/python:3.9-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -13,4 +13,4 @@ COPY . /app/
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.11.0/wait /wait
 RUN chmod +x /wait
 
-CMD /wait && python app.py
+CMD /wait && flask --app app run --debug
