@@ -1,4 +1,4 @@
-version: '2.5'
+version: '3'
 services:
   db:
     image: mysql
@@ -11,19 +11,25 @@ services:
       - ./api/db/CriarDatabase.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
+    networks:
+      app_net:
+        ipv4_address: 172.21.0.2
 
   api:
-    build: "./api"
+    build: "/api"
     container_name: python-container
-    volumes:
-      - ./api:/app
     ports:
       - "5000:5000"
+    environment:
+      WAIT_HOSTS: db:3306
     depends_on:
       - db
+    networks:
+      app_net:
+        ipv4_address: 172.21.0.3
   
   loki:
-    build: ./etc/loki
+    build: /etc/loki
     ports:
       - 3100:3100
     command:
@@ -42,11 +48,17 @@ services:
       - loki
   
   grafana:
-    image: grafana/grafana:latest
+    build: etc/grafana
     ports:
       - "3200:3200"
     networks:
-      - loki
+      app_net:
+        ipv4_address: 172.21.0.4
 
 networks:
   loki:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16

@@ -6,10 +6,11 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 COPY requirements.txt /app/
-RUN bash wait-for-db.sh
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY . /app/
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.11.0/wait /wait
+RUN chmod +x /wait
 
-CMD ["python", "app.py"]
+CMD /wait && python app.py
