@@ -6,8 +6,7 @@ import db
 import logging_loki
 from flask import Flask, request
 from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import \
-    OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -38,7 +37,7 @@ metrics.info("app_info", "Application info", version="1.0")
 
 # Configuração dos logs
 formatter = logging.basicConfig(
-    level=logging.INFO, filename="aplicacao.log", format="%(levelname)s %(message)s"
+    level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s"
 )
 # logging.getLogger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
