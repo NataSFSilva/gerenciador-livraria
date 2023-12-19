@@ -7,7 +7,7 @@ traces:
           grpc:
             endpoint: "0.0.0.0:4317"
           http:
-            endpoint: "172.21.0.3:4318"  
+            endpoint: "0.0.0.0:4318"  
     remote_write:
       - endpoint: http://grafana-tempo-hml-api.dock.tech
         insecure: true

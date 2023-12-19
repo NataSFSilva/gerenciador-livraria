@@ -20,7 +20,7 @@ trace.set_tracer_provider(TracerProvider(resource=resource))
 
 # Configuração do OTLP Exporter com HTTP/JSON
 otlp_exporter = OTLPSpanExporter(
-    endpoint="http://localhost:4318",
+    endpoint="http://172.21.0.4:4318",
     headers={},
 )
 span_processor = BatchSpanProcessor(otlp_exporter)
@@ -37,9 +37,9 @@ metrics.info("app_info", "Application info", version="1.0")
 
 # Configuração dos logs
 formatter = logging.basicConfig(
-    level=logging.INFO, filename="aplicacao.log", format="%(asctime)s - %(levelname)s %(message)s"
+    level=logging.INFO, filename="../var/log/aplication.log", format="%(asctime)s - %(levelname)s %(message)s"
 )
-# logging.getLogger.setLevel(logging.INFO)
+logging.config
 logger = logging.getLogger(__name__)
 handler = logging_loki.LokiHandler(
     url="http://grafana-loki-hml.dock.tech/loki/api/v1/push",
@@ -52,7 +52,6 @@ logger.addHandler(handler)
 
 # Instrumentando Flask
 FlaskInstrumentor().instrument_app(app)
-
 
 def responseSuccess(stts: int, msg: str, dt=None):
     response = {
