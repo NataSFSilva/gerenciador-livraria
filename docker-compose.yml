@@ -20,6 +20,8 @@ services:
     container_name: python-container
     ports:
       - "5001:5000"
+    volumes:
+      - /api:/var/log
     environment:
       WAIT_HOSTS: db:3306
     depends_on:
@@ -28,44 +30,7 @@ services:
       app_net:
         ipv4_address: 172.21.0.3
 
-  loki:
-    build: "./etc/loki"
-    image: grafana/loki:latest
-    ports:
-      - 3100:3100
-    command:
-      - -config.file=/etc/loki/loki-config.yaml
-      - -print-config-stderr=true
-    volumes:
-      - ./etc/loki/loki-config.yaml:/etc/loki/loki-config.yaml
-    networks:
-      loki:
-      app_net:
-        ipv4_address: 172.21.0.5
-
-  promtail:
-    image: grafana/promtail:2.6.1
-    volumes:
-      - ./etc/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
-      - ./aplicacao.log:/log
-    command: -config.file="/etc/promtail/promtail-config.yaml"
-    depends_on:
-      - loki
-      - api
-    networks:
-      app_net:
-        ipv4_address: 172.21.0.6
-
-  grafana:
-    build: "./etc/grafana"
-    ports:
-      - "3200:3200"
-    networks:
-      app_net:
-        ipv4_address: 172.21.0.4
-
 networks:
-  loki:
   app_net:
     ipam:
       driver: default

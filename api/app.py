@@ -1,6 +1,7 @@
 import json
 import logging
 from datetime import datetime
+import subprocess
 
 import db
 import logging_loki
@@ -37,7 +38,7 @@ metrics.info("app_info", "Application info", version="1.0")
 
 # Configuração dos logs
 formatter = logging.basicConfig(
-    level=logging.INFO, filename="../var/log/aplication.log", format="%(asctime)s - %(levelname)s %(message)s"
+    level=logging.INFO, filename="aplication.log", format="%(asctime)s - %(levelname)s %(message)s"
 )
 logging.config
 logger = logging.getLogger(__name__)
@@ -179,3 +180,9 @@ def getByGenero(g):
         logging.debug("Data: " + str(filmes))
         logging.info("Success request")
         return responseSuccess(200, "Found value with sucess", filmes)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+    # subprocess.run(["systemctl", "enable", "grafana-agent"])
+    # subprocess.run(["systemctl", "start", "grafana-agent"])
+    # subprocess.run(["systemctl", "status", "grafana-agent"])

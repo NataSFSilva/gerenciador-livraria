@@ -1,0 +1,82 @@
+server:
+  log_level: warn
+
+# Metrics config
+metrics:
+  global:
+    scrape_interval: 60s
+    external_labels:
+      business_unit: workshop
+      service: app-teste
+      env: dev
+      account: observability-poc-160927522959
+      owner: observability
+      cloud_provider: aws
+  configs:
+    - name: jornada-agent-metrics
+      scrape_configs:
+        - job_name: jornada-agent-metrics
+          static_configs:
+            - targets: ['ip-instance:9090']
+      remote_write:
+        - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
+          basic_auth:
+            username: $GRAFANA_USER_ID
+            password: $GRAFANA_TOKEN
+integrations:
+  agent:
+    enabled: true
+    instance: workshop-o11y
+  node_exporter:
+    enabled: true
+    instance: workshop-o11y
+# Logs Config
+logs:
+  configs:
+  - name: integrations
+    positions:
+      filename: /tmp/positions.yaml
+    scrape_configs:
+    - job_name: workshop-observability
+      static_configs:
+      - targets:
+          - 'journalctl -u workshop-app -o json'
+        labels:
+          __path__: /var/log/journal
+          job: workshop-observability
+          instance: workshop-o11y
+          business_unit: workshop
+          service: app-teste
+          env: dev
+          account: observability-poc-160927522959
+          owner: observability
+          cloud_provider: aws
+    clients:
+      - basic_auth:
+          password: $GRAFANA_TOKEN
+          username: $GRAFANA_USER_ID
+        url: https://logs-prod-006.grafana.net/loki/api/v1/push        
+# Traces Config
+traces:
+  configs:
+  - name: server_traces
+    receivers:
+      jaeger:
+        protocols:
+          grpc:
+          thrift_binary:
+          thrift_compact:
+          thrift_http:
+      zipkin:
+      otlp:
+        protocols:
+          http:
+            endpoint: "127.0.0.1:4318"
+          grpc:
+            endpoint: "127.0.0.1:4317"
+      opencensus:
+    remote_write:
+      - endpoint: tempo-prod-04-prod-us-east-0.grafana.net:443
+        basic_auth:
+          username: $GRAFANA_USER_ID
+          password: $GRAFANA_TOKEN
