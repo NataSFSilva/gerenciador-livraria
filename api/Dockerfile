@@ -20,4 +20,4 @@ COPY . /app/
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.11.0/wait /wait
 RUN chmod +x /wait
 
-CMD /wait && flask --app app run --debug && grafana-agent -config.file=/etc/grafana-agent.yaml
+CMD /wait && flask --app app run --debug

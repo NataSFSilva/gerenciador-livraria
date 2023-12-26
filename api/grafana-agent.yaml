@@ -30,6 +30,7 @@ integrations:
   node_exporter:
     enabled: true
     instance: workshop-o11y
+
 # Logs Config
 logs:
   configs:
@@ -55,7 +56,8 @@ logs:
       - basic_auth:
           password: $GRAFANA_TOKEN
           username: $GRAFANA_USER_ID
-        url: https://logs-prod-006.grafana.net/loki/api/v1/push        
+        url: https://logs-prod-006.grafana.net/loki/api/v1/push
+        
 # Traces Config
 traces:
   configs:

@@ -1,7 +1,6 @@
 import json
 import logging
 from datetime import datetime
-import subprocess
 
 import db
 import logging_loki
@@ -183,6 +182,3 @@ def getByGenero(g):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-    # subprocess.run(["systemctl", "enable", "grafana-agent"])
-    # subprocess.run(["systemctl", "start", "grafana-agent"])
-    # subprocess.run(["systemctl", "status", "grafana-agent"])
